@@ -10,7 +10,7 @@ Census::~Census(void)
 {
 }
 
-void Census::init(const Mat& leftImg, const Mat& rightImg)
+void Census::init(const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
 	leftCensusImg.create(leftImg.rows, leftImg.cols, CV_16U);
 	rightCensusImg.create(rightImg.rows, rightImg.cols, CV_16U);
@@ -26,11 +26,11 @@ void Census::init(const Mat& leftImg, const Mat& rightImg)
 
 float  Census::operator()(int row, int col, const float disp)
 {
-	return (*this)(Point(col, row), disp);
+	return (*this)(cv::Point(col, row), disp);
 }
-float  Census::operator()(const Point point, const float disp)
+float  Census::operator()(const cv::Point point, const float disp)
 {
-	if((point.x - disp < 0)||(point.x - disp >= (leftCensusImg.cols - 1))) return 0xFF;
+	if((point.x - disp < 0)||(point.x - disp >= (leftCensusImg.cols - 1))||(point.x < 0)||(point.x >= (leftCensusImg.cols - 1))) return 255.0;
 	uint leftCensus = leftCensusImg.at<ushort>(point.y, point.x);
 	uint rightCensus = rightCensusImg.at<ushort>(point.y, floor(point.x - disp + 0.5));
 	int cost = hamming(leftCensus, rightCensus);
@@ -49,7 +49,7 @@ uint Census::popcount(unsigned int x)
 	return c;
 }
 
-void Census::applyCensusTransform(const Mat& img, Mat& censusImg)
+void Census::applyCensusTransform(const cv::Mat& img, cv::Mat& censusImg)
 {
 	int neighb[16][2] = {
 		{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, 

@@ -10,7 +10,7 @@ IntensityCost::~IntensityCost(void)
 {
 }
 
-void IntensityCost::init(const Mat& leftImg, const Mat& rightImg)
+void IntensityCost::init(const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
 	leftDscrImg = leftImg;
 	rightDscrImg = rightImg;
@@ -18,10 +18,10 @@ void IntensityCost::init(const Mat& leftImg, const Mat& rightImg)
 
 float  IntensityCost::operator()(int row, int col, const float disp)
 {
-	return (*this)(Point(col, row), disp);
+	return (*this)(cv::Point(col, row), disp);
 }
 
-float  IntensityCost::operator()(const Point point, const float disp)
+float  IntensityCost::operator()(const cv::Point point, const float disp)
 {
 	double intPart;
 	double frac = modf((double)disp, &intPart);

@@ -13,20 +13,20 @@ EnergyFunction::~EnergyFunction(void)
 {
 }
 
-void EnergyFunction::init(const Mat& leftImg, const Mat& rightImg)
+void EnergyFunction::init(const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
-	adapWin.init(leftImg);
+	adapWin.init(leftImg, rightImg);
 	costFnct.init(leftImg, rightImg);
 }
 
-bool EnergyFunction::betterPlane(int row, int col, Vec3f planeEquation, Vec3f planeEquationProposal)
+bool EnergyFunction::betterPlane(int row, int col, cv::Vec3f planeEquation, cv::Vec3f planeEquationProposal, Direction dir)
 {
-	float currentCost = computeEnergy(row, col, planeEquation);
-	float proposalCost = computeEnergy(row, col, planeEquationProposal);
+	float currentCost = computeEnergy(row, col, planeEquation, dir);
+	float proposalCost = computeEnergy(row, col, planeEquationProposal, dir);
 	return (currentCost > proposalCost)?true:false;
 }
 
-float EnergyFunction::computeEnergy(int row, int col, Vec3f planeEquation)
+float EnergyFunction::computeEnergy(int row, int col, cv::Vec3f planeEquation, Direction dir)
 {
 	float energy(0.0);
 	float sumWeights(0.0);
@@ -34,9 +34,17 @@ float EnergyFunction::computeEnergy(int row, int col, Vec3f planeEquation)
 		for(int neighbCol = (-params.winSize/2 + col); neighbCol < (params.winSize/2 + col); ++neighbCol)
 		{
 			float disp = planeEquation[0]*(neighbCol - col) + planeEquation[1]*(neighbRow - row) + planeEquation[2];
-			float weight = adapWin(row, col, neighbRow, neighbCol);
+			float weight = adapWin(row, col, neighbRow, neighbCol, dir);
 			sumWeights += weight;
-			energy += costFnct(neighbRow, neighbCol, disp) * weight;
+			switch(dir)
+			{
+			case LEFT:
+				energy += costFnct(neighbRow, neighbCol, disp) * weight;
+				break;
+			case RIGHT:
+				energy += costFnct(neighbRow, neighbCol + disp, disp) * weight;
+				break;
+			}
 		}
 	energy /= sumWeights;
 

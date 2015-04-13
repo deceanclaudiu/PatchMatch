@@ -1,14 +1,15 @@
 #pragma once
 
-#include "opencv2\core.hpp"
-#include "opencv2\highgui.hpp"
 #include<stdio.h>
 #include<iostream>
 
-#include "Params.h"
+#include "RandomPlaneInit.h"
+#include "SGMPlaneInit.h"
+#include "PlaneRefinementProposal.h"
 
 using namespace cv;
-using namespace std;
+
+typedef RandomPlaneInit PlaneInitMethod; 
 
 class SpatialPlanes
 {
@@ -20,14 +21,16 @@ public:
 	SpatialPlanes(const Params&);
 	~SpatialPlanes(void);
 
-	Vec3f operator()(int row, int col, RETURN_TYPE returnType= CURRENT);
-	void replace(int rowFrom, int colFrom, int rowTo, int colTo);
-	void initRand(int rows, int cols);
+	Vec3f operator()(int row, int col, Direction dir, RETURN_TYPE returnType= CURRENT);
+	void replace(int rowFrom, int colFrom, int rowTo, int colTo, Direction dir);
+	void init(const Mat& leftImg, const Mat& rightImg);
 	void refine(float deltaDisp, Vec3f deltaNormal);
-	void replaceWithRefinedPlane(int row, int col);
+	void replaceWithRefinedPlane(int row, int col, Direction dir);
 //private:
-	Mat disp, normals;
-	Mat refinedDisp, refinedNormals;
+	PlaneInitMethod planeInit;
+	PlaneRefinementProposal planeRefinementProposal;
+	Mat disp[2], normals[2];
+	Mat refinedDisp[2], refinedNormals[2];
 	const Params& params;
 };
 

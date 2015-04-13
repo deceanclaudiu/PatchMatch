@@ -6,16 +6,13 @@
 
 #include "Params.h"
 
-using namespace cv;
-using namespace std;
-
 class FeatureDescriptor
 {
 public:
 	FeatureDescriptor(const Params& params);
 	virtual ~FeatureDescriptor(void);
-	virtual void init(const Mat& leftImg, const Mat& rightImg){};
-	virtual float  operator()(const Point point, const float disp){ return 0;};
+	virtual void init(const cv::Mat& leftImg, const cv::Mat& rightImg)=0;
+	virtual float  operator()(const cv::Point point, const float disp)=0;
 
 protected:
 	const Params& params;

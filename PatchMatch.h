@@ -6,9 +6,6 @@
 #include "Params.h"
 #include "EnergyFunction.h"
 
-using namespace cv;
-using namespace std;
-
 class PatchMatch
 {
 public:
@@ -16,16 +13,18 @@ public:
 	PatchMatch(const Params&);
 	~PatchMatch(void);
 
-	void compute(const Mat& leftImg, const Mat& rightImg, Mat& dispImg);
+	void compute(const cv::Mat& leftImg, const cv::Mat& rightImg, cv::Mat& dispImg);
 
 private:
-	void spatialPropagation(int it);
-	void planeRefinement(int it);
-	void init(const Mat& leftImg, const Mat& rightImg);
-	SpatialPlanes leftPlanes, rightPlanes;
-	EnergyFunction energyFn;
+	void spatialPropagation(SpatialPlanes& planes, EnergyFunction& energyFnct, cv::Mat& curCost, int it, Direction dir);
+	void viewPropagation(SpatialPlanes& planes, EnergyFunction& energyFnct, cv::Mat& curCost, int it, Direction dir);
+	void planeRefinement(SpatialPlanes& planes, EnergyFunction& energyFnct, cv::Mat& curCost, int it, Direction dir);
+	void leftRightConfCheck(SpatialPlanes& planes, cv::Mat& dispImg);
+	void init(const cv::Mat& leftImg, const cv::Mat& rightImg);
+	SpatialPlanes planes;
+	EnergyFunction energyFnct;
 	const Params& params;
-	Mat leftCost, rightCost;
+	cv::Mat leftCost, rightCost;
 	int rows, cols;
 };
 

@@ -16,7 +16,7 @@ CombineCost::~CombineCost(void)
 {
 }
 
-void CombineCost::init(const Mat& leftImg, const Mat& rightImg)
+void CombineCost::init(const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
 	leftDscrImg = leftImg;
 	rightDscrImg = rightImg;
@@ -27,10 +27,10 @@ void CombineCost::init(const Mat& leftImg, const Mat& rightImg)
 
 float  CombineCost::operator()(int row, int col, const float disp)
 {
-	return (*this)(Point(col, row), disp);
+	return (*this)(cv::Point(col, row), disp);
 }
 
-float  CombineCost::operator()(const Point point, const float disp)
+float  CombineCost::operator()(const cv::Point point, const float disp)
 {
 	double censusCst, gradientCst, intensityCst, cost;
 	censusCst = censusCost(point, disp);

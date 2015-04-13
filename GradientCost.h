@@ -10,13 +10,13 @@ public:
 	GradientCost(const Params& params);
 	~GradientCost(void);
 
-	void init(const Mat& leftImg, const Mat& rightImg);
-	float  operator()(const Point point, const float disp);
+	void init(const cv::Mat& leftImg, const cv::Mat& rightImg);
+	float  operator()(const cv::Point point, const float disp);
 	float  operator()(int row, int col, const float disp);
 private:
-	void applyTransform(const Mat& img, Mat& resultImg);
+	void applyTransform(const cv::Mat& img, cv::Mat& resultImg);
 	uint sad(ushort a, ushort b);
-	Mat leftDscrImg;
-	Mat rightDscrImg;
+	cv::Mat leftDscrImg;
+	cv::Mat rightDscrImg;
 };
 

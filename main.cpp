@@ -5,16 +5,13 @@
 #include "Census.h"
 #include "PatchMatch.h"
 
-using namespace std;
-using namespace cv;
-
 Params params;
 PatchMatch pm(params);
 
 int main()
 {
-	string sourceDir = "d:/Work/Kitti/dataset/training\\";
-	Mat leftImg, rightImg, dispImg, leftFilteredImg, rightFilteredImg;
+	std::string sourceDir = "d:/Work/Kitti/dataset/training\\";
+	cv::Mat leftImg, rightImg, dispImg, leftFilteredImg, rightFilteredImg;
 
 	leftImg = imread(sourceDir + "image_0/000028_10.png");
 	rightImg = imread(sourceDir + "image_1/000028_10.png");
@@ -24,9 +21,9 @@ int main()
 	//rightImg = imread("D:/Work/DisparityEstimationMethods/PatchMatch/right.png");
 	//bilateralFilter(leftImg, leftFilteredImg, 15, 10, 10);
 	//bilateralFilter(rightImg, rightFilteredImg, 15, 10, 10);
-	namedWindow("Left Image");
-	imshow("Left Image", leftImg);
-	waitKey(1);
+	cv::namedWindow("Left Image");
+	cv::imshow("Left Image", leftImg);
+	cv::waitKey(1);
 
 	pm.compute(leftImg, rightImg, dispImg);
 	return 0;

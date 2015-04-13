@@ -9,8 +9,6 @@
 #include "AdaptiveWindow.h"
 #include "CombineCost.h"
 
-using namespace cv;
-
 typedef Census CostFunction; 
 
 class EnergyFunction
@@ -19,9 +17,9 @@ public:
 	EnergyFunction(const Params& params);
 	~EnergyFunction(void);
 
-	void init(const Mat& leftImg, const Mat& rightImg);
-	bool betterPlane(int row, int col, Vec3f planeEquation, Vec3f planeEquationProposal);
-	float computeEnergy(int row, int col, Vec3f planeEquation);
+	void init(const cv::Mat& leftImg, const cv::Mat& rightImg);
+	bool betterPlane(int row, int col, cv::Vec3f planeEquation, cv::Vec3f planeEquationProposal, Direction dir);
+	float computeEnergy(int row, int col, cv::Vec3f planeEquation, Direction dir);
 private:
 	AdaptiveWindow adapWin; 
 	CostFunction costFnct;

@@ -14,15 +14,15 @@ public:
 	CombineCost(const Params& params);
 	~CombineCost(void);
 
-	void init(const Mat& leftImg, const Mat& rightImg);
-	float  operator()(const Point point, const float disp);
+	void init(const cv::Mat& leftImg, const cv::Mat& rightImg);
+	float  operator()(const cv::Point point, const float disp);
 	float  operator()(int row, int col, const float disp);
 private:
 	Census censusCost;
 	IntensityCost intensityCost;
 	GradientCost gradientCost;
-	Mat leftDscrImg;
-	Mat rightDscrImg;
+	cv::Mat leftDscrImg;
+	cv::Mat rightDscrImg;
 
 	static const float alfa, beta;
 };

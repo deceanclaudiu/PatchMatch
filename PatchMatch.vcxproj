@@ -68,6 +68,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <SourcePath>D:\Work\DisparityEstimationMethods\rSGM\src;$(SourcePath)</SourcePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -83,8 +86,9 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\tools\opencv3.0\opencv\build\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\tools\opencv3.0\opencv\build\include\;D:\Work\DisparityEstimationMethods\rSGM\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -113,10 +117,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>d:\tools\opencv3.0\opencv\build\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>d:\tools\opencv3.0\opencv\build\include\;D:\Work\DisparityEstimationMethods\rSGM\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -127,6 +135,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\rSGM\src\FastFilters.cpp" />
+    <ClCompile Include="..\..\rSGM\src\rSGMCmd.cpp" />
+    <ClCompile Include="..\..\rSGM\src\StereoBMHelper.cpp" />
     <ClCompile Include="AdaptiveWindow.cpp" />
     <ClCompile Include="Census.cpp" />
     <ClCompile Include="CombineCost.cpp" />
@@ -137,6 +148,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="PatchMatch.cpp" />
+    <ClCompile Include="PlaneInit.cpp" />
+    <ClCompile Include="PlaneRefinementProposal.cpp" />
+    <ClCompile Include="RandomPlaneInit.cpp" />
+    <ClCompile Include="SGMPlaneInit.cpp" />
     <ClCompile Include="SpatialPlanes.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +164,10 @@
     <ClInclude Include="IntensityCost.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="PatchMatch.h" />
+    <ClInclude Include="PlaneInit.h" />
+    <ClInclude Include="PlaneRefinementProposal.h" />
+    <ClInclude Include="RandomPlaneInit.h" />
+    <ClInclude Include="SGMPlaneInit.h" />
     <ClInclude Include="SpatialPlanes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

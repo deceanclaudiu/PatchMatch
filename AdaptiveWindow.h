@@ -7,18 +7,16 @@
 
 #include "Params.h"
 
-using namespace cv;
-
 class AdaptiveWindow
 {
 public:
 	AdaptiveWindow(const Params&);
 	~AdaptiveWindow(void);
 
-	void init(const Mat& img);
-	float  operator()(int row, int col, int neighbRow, int neighbCol);
+	void init(const cv::Mat& leftImg, const cv::Mat& rightImg);
+	float  operator()(int row, int col, int neighbRow, int neighbCol, Direction dir);
 private:
-	Mat img;
+	cv::Mat leftImg, rightImg;
 	static const float SIGMAI;
 	const Params& params;
 	int cols, rows;

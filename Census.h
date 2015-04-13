@@ -10,14 +10,14 @@ public:
 	Census(const Params& params);
 	~Census(void);
 
-	void init(const Mat& leftImg, const Mat& rightImg);
-	float  operator()(const Point point, const float disp);
+	void init(const cv::Mat& leftImg, const cv::Mat& rightImg);
+	float  operator()(const cv::Point point, const float disp);
 	float  operator()(int row, int col, const float disp);
 private:
 	uint popcount(unsigned int x);
-	void applyCensusTransform(const Mat& img, Mat& censusImg);
+	void applyCensusTransform(const cv::Mat& img, cv::Mat& censusImg);
 	uint hamming(ushort a, ushort b);
-	Mat leftCensusImg;
-	Mat rightCensusImg;
+	cv::Mat leftCensusImg;
+	cv::Mat rightCensusImg;
 };
 
