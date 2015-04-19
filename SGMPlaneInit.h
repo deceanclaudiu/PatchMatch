@@ -1,7 +1,6 @@
 #pragma once
 #include "planeinit.h"
-
-#include "rSGMCmd.h"
+#include "opencv2\calib3d.hpp"
 
 class SGMPlaneInit :
 	public PlaneInit

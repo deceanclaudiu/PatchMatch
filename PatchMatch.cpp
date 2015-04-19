@@ -53,6 +53,10 @@ void PatchMatch::compute(const cv::Mat& leftImg, const cv::Mat& rightImg, cv::Ma
 	cols = leftImg.cols;
 	dispImg.create(leftImg.rows, leftImg.cols, CV_32F);
 	init(leftImg, rightImg);
+	imshow("left disparity image", planes.disp[LEFT]/255);
+	imshow("right disparity image", planes.disp[RIGHT]/255);
+	cout<<"initialization done"<<endl;
+	waitKey(1);
 	for(int it = 0; it < params.iterationNo; ++it)
 	{
 		spatialPropagation(planes, energyFnct, leftCost, it, LEFT);

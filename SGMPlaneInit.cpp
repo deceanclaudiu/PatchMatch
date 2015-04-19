@@ -12,22 +12,37 @@ SGMPlaneInit::~SGMPlaneInit(void)
 
 void SGMPlaneInit::init(const cv::Mat& leftImg, const cv::Mat& rightImg, cv::Mat disp[], cv::Mat normals[])
 {
+	cv::Vec3f normalLeft(0,0,0);
 	disp[LEFT].create(leftImg.rows, leftImg.cols, CV_32F);
 	normals[LEFT].create(leftImg.rows, leftImg.cols, CV_32FC3);
 	disp[RIGHT].create(leftImg.rows, leftImg.cols, CV_32F);
 	normals[RIGHT].create(leftImg.rows, leftImg.cols, CV_32FC3);
-	cv::Mat leftImgPadded = leftImg;
-	cv::Mat rightImgPadded = rightImg;
-	uint8* leftImgPtr = leftImgPadded.data;
-	uint8* rightImgPtr = rightImgPadded.data;
-	float32 * dispImg, * dispImgRight;
-	if(leftImg.cols % 4 != 0)
-	{
-		int pad = leftImg.cols % 4;
-		cv::copyMakeBorder(leftImg, leftImgPadded, 0, 0, 0, 4 - pad, cv::BORDER_CONSTANT);
-		cv::copyMakeBorder(rightImg, rightImgPadded, 0, 0, 0, 4 - pad, cv::BORDER_CONSTANT);
-	}
-	dispImg = (float32*)_mm_malloc(leftImgPadded.cols*leftImgPadded.rows*sizeof(float32), 16);
-	dispImgRight = (float32*)_mm_malloc(leftImgPadded.cols*leftImgPadded.rows*sizeof(float32), 16);
-	processCensus9x7SGM(leftImgPtr, rightImgPtr, dispImg, dispImgRight, leftImgPadded.cols, leftImgPadded.rows, 1, 8, 4, 4, 256);
+	cv::Ptr<cv::StereoSGBM> sgm = cv::StereoSGBM::create(0,256,3, 50, 800, 1, 15, 0, 100, 32, 1); 
+	cv::Mat disp_uint16, dervX, dervY;
+	sgm->compute(leftImg, rightImg, disp_uint16);
+	cv::Scharr(disp_uint16, dervX, CV_16S, 1, 0);
+	cv::Scharr(disp_uint16, dervY, CV_16S, 0, 1);
+	for(int row=0;row < leftImg.rows; ++row)
+		for(int col=0;col < leftImg.cols; ++col)
+		{
+			float dispValue = disp_uint16.at<ushort>(row, col)/16.0f;
+			float a = dervX.at<short>(row, col)/16.0;
+			float b = dervY.at<short>(row, col)/16.0;
+			float c = dispValue;
+			float nz = c;
+			float nx = (-1) * a * nz;
+			float ny = (-1) * b * nz;
+			normalLeft = cv::Vec3f(nx, ny, nz);
+			disp[LEFT].at<float>(row, col) = dispValue;
+			disp[RIGHT].at<float>(row, col) = dispValue;
+			if(c==0)
+			{
+				normalLeft = cv::Vec3f(0, 0, 1);
+			}else
+			{
+				cv::normalize(normalLeft, normalLeft, 1.0, 0.0, cv::NORM_L2);
+			}
+			normals[LEFT].at<cv::Vec3f>(row, col) = normalLeft;
+			normals[RIGHT].at<cv::Vec3f>(row, col) = normalLeft;
+		}
 }
