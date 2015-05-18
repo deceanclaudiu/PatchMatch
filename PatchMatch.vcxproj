@@ -67,9 +67,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <SourcePath>d:\tools\libviso2\src\;$(SourcePath)</SourcePath>
+    <IncludePath>d:\tools\libviso2\src\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <SourcePath>D:\Work\DisparityEstimationMethods\rSGM\src;$(SourcePath)</SourcePath>
+    <SourcePath>D:\Work\DisparityEstimationMethods\rSGM\src;d:\tools\libviso2\src\;$(SourcePath)</SourcePath>
+    <IncludePath>d:\tools\libviso2\src\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -135,6 +138,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\tools\libviso2\src\filter.cpp" />
+    <ClCompile Include="..\..\..\..\tools\libviso2\src\matcher.cpp" />
+    <ClCompile Include="..\..\..\..\tools\libviso2\src\matrix.cpp" />
+    <ClCompile Include="..\..\..\..\tools\libviso2\src\reconstruction.cpp" />
+    <ClCompile Include="..\..\..\..\tools\libviso2\src\triangle.cpp" />
+    <ClCompile Include="..\..\..\..\tools\libviso2\src\viso.cpp" />
+    <ClCompile Include="..\..\..\..\tools\libviso2\src\viso_mono.cpp" />
+    <ClCompile Include="..\..\..\..\tools\libviso2\src\viso_stereo.cpp" />
     <ClCompile Include="..\..\rSGM\src\FastFilters.cpp" />
     <ClCompile Include="..\..\rSGM\src\rSGMCmd.cpp" />
     <ClCompile Include="..\..\rSGM\src\StereoBMHelper.cpp" />
@@ -146,6 +157,7 @@
     <ClCompile Include="GradientCost.cpp" />
     <ClCompile Include="IntensityCost.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MultiViewMatcher.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="PatchMatch.cpp" />
     <ClCompile Include="PlaneInit.cpp" />
@@ -155,6 +167,15 @@
     <ClCompile Include="SpatialPlanes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\filter.h" />
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\matcher.h" />
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\matrix.h" />
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\reconstruction.h" />
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\timer.h" />
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\triangle.h" />
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\viso.h" />
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\viso_mono.h" />
+    <ClInclude Include="..\..\..\..\tools\libviso2\src\viso_stereo.h" />
     <ClInclude Include="AdaptiveWindow.h" />
     <ClInclude Include="Census.h" />
     <ClInclude Include="CombineCost.h" />
@@ -162,6 +183,7 @@
     <ClInclude Include="FeatureDescriptor.h" />
     <ClInclude Include="GradientCost.h" />
     <ClInclude Include="IntensityCost.h" />
+    <ClInclude Include="MultiViewMatcher.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="PatchMatch.h" />
     <ClInclude Include="PlaneInit.h" />

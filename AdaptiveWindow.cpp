@@ -29,5 +29,7 @@ float  AdaptiveWindow::operator()(int row, int col, int neighbRow, int neighbCol
 			return WLUT[leftImg.at<uchar>(row, col)][leftImg.at<uchar>(neighbRow, neighbCol)];
 		case RIGHT:
 			return WLUT[rightImg.at<uchar>(row, col)][rightImg.at<uchar>(neighbRow, neighbCol)];
+		default:
+			return 0;
 	}
 }
