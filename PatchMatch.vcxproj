@@ -151,11 +151,17 @@
     <ClCompile Include="..\..\rSGM\src\StereoBMHelper.cpp" />
     <ClCompile Include="AdaptiveWindow.cpp" />
     <ClCompile Include="Census.cpp" />
-    <ClCompile Include="CombineCost.cpp" />
+    <ClCompile Include="CombineCost.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="EnergyFunction.cpp" />
     <ClCompile Include="FeatureDescriptor.cpp" />
     <ClCompile Include="GradientCost.cpp" />
-    <ClCompile Include="IntensityCost.cpp" />
+    <ClCompile Include="IntensityCost.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MultiViewMatcher.cpp" />
     <ClCompile Include="Params.cpp" />
@@ -178,11 +184,17 @@
     <ClInclude Include="..\..\..\..\tools\libviso2\src\viso_stereo.h" />
     <ClInclude Include="AdaptiveWindow.h" />
     <ClInclude Include="Census.h" />
-    <ClInclude Include="CombineCost.h" />
+    <ClInclude Include="CombineCost.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="EnergyFunction.h" />
     <ClInclude Include="FeatureDescriptor.h" />
     <ClInclude Include="GradientCost.h" />
-    <ClInclude Include="IntensityCost.h" />
+    <ClInclude Include="IntensityCost.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="MultiViewMatcher.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="PatchMatch.h" />

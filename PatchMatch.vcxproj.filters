@@ -42,9 +42,6 @@
     <ClCompile Include="IntensityCost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GradientCost.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CombineCost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,6 +93,9 @@
     <ClCompile Include="MultiViewMatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GradientCost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FeatureDescriptor.h">
@@ -120,9 +120,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IntensityCost.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GradientCost.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CombineCost.h">
@@ -168,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MultiViewMatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GradientCost.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

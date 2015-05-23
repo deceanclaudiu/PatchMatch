@@ -35,22 +35,22 @@ int main()
 	mvm.process(leftImg0, rightImg0);
 	if (mvm.process(leftImg1, rightImg1)) 
 	{
-		for(int i=2 ; i< 255; ++i)
-		{
-			cv::Point3f input(600,100, i);
-			cv::Point3f output;
-			mvm.getUvdFr1ToFr0(input, output);
-			cv::Point2f pct1(input.x, input.y);
-			cv::Point2f pct0(output.x, output.y);
-			cv::circle(leftImg1, pct1, 10, cv::Scalar(0), 3);
-			cv::circle(leftImg0, pct0, 10, cv::Scalar(0), 3);
+		//for(int i=2 ; i< 255; ++i)
+		//{
+		//	cv::Point3f input(300,200, i);
+		//	cv::Point3f output;
+		//	mvm.getUvdFr1ToFr0(input, output);
+		//	cv::Point2f pct1(input.x, input.y);
+		//	cv::Point2f pct0(output.x, output.y);
+		//	cv::circle(leftImg1, pct1, 10, cv::Scalar(0), 3);
+		//	cv::circle(leftImg0, pct0, 10, cv::Scalar(0), 3);
 
-			cv::namedWindow("Left Image 0");
-			cv::imshow("Left Image", leftImg1);
-			cv::imshow("Left Image 0", leftImg0);
-			cv::waitKey(0);
-		}
+		//	cv::namedWindow("Left Image 0");
+		//	cv::imshow("Left Image", leftImg1);
+		//	cv::imshow("Left Image 0", leftImg0);
+		//	cv::waitKey(0);
+		//}
 	}
-	//pm.compute(leftImg1, rightImg1, dispImg);
+	pm.compute(leftImg1, rightImg1, dispImg);
 	return 0;
 }

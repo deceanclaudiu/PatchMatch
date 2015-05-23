@@ -9,7 +9,7 @@
 #include "AdaptiveWindow.h"
 #include "CombineCost.h"
 
-typedef Census CostFunction; 
+typedef CombineCost CostFunction; 
 
 class EnergyFunction
 {

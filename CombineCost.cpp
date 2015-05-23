@@ -18,8 +18,7 @@ CombineCost::~CombineCost(void)
 
 void CombineCost::init(const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
-	leftDscrImg = leftImg;
-	rightDscrImg = rightImg;
+	FeatureDescriptor::init(leftImg, rightImg);
 	censusCost.init(leftImg,rightImg);
 	intensityCost.init(leftImg,rightImg);
 	gradientCost.init(leftImg,rightImg);

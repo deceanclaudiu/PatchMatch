@@ -21,8 +21,6 @@ private:
 	Census censusCost;
 	IntensityCost intensityCost;
 	GradientCost gradientCost;
-	cv::Mat leftDscrImg;
-	cv::Mat rightDscrImg;
 
 	static const float alfa, beta;
 };
