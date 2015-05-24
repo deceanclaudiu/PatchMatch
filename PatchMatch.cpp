@@ -27,7 +27,8 @@ void writeMatToFileN(cv::Mat& m, const char* filename)
 PatchMatch::PatchMatch(const Params& params):
 	params(params),
 	planes(params),
-	energyFnct(params)
+	energyFnct(params),
+	frameCnt(0)
 {
 }
 
@@ -47,42 +48,52 @@ void PatchMatch::leftRightConfCheck(SpatialPlanes& planes, cv::Mat& dispImg)
 		}
 }
 
-void PatchMatch::compute(const cv::Mat& leftImg, const cv::Mat& rightImg, cv::Mat& dispImg)
+void PatchMatch::compute(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv::Mat& rightImg, cv::Mat& dispImg)
 {
+	++frameCnt;
 	rows = leftImg.rows;
 	cols = leftImg.cols;
 	dispImg.create(leftImg.rows, leftImg.cols, CV_32F);
-	init(leftImg, rightImg);
-	imshow("left disparity image", planes.disp[LEFT]/255);
-	imshow("right disparity image", planes.disp[RIGHT]/255);
-	cout<<"initialization done"<<endl;
-	waitKey(1);
+	init(mvm, leftImg, rightImg);
+	if(frameCnt < 2) return;
+	cv::imshow("left disparity image", planes.disp[LEFT]/255);
+	cv::imshow("right disparity image", planes.disp[RIGHT]/255);
+	std::cout<<"initialization done"<<endl;
+	cv::waitKey(1);
 	for(int it = 0; it < params.iterationNo; ++it)
 	{
 		spatialPropagation(planes, energyFnct, leftCost, it, LEFT);
 		spatialPropagation(planes, energyFnct, rightCost, it, RIGHT);
 
-		imshow("left disparity image", planes.disp[LEFT]/255);
-		imshow("right disparity image", planes.disp[RIGHT]/255);
-		cout<<"spatial propagation done at iteration "<<it<<endl;
-		waitKey(1);
+		cv::imshow("left disparity image", planes.disp[LEFT]/255);
+		cv::imshow("right disparity image", planes.disp[RIGHT]/255);
+		std::cout<<"spatial propagation done at iteration "<<it<<endl;
+		cv::waitKey(1);
 
 		planeRefinement(planes, energyFnct, leftCost, it, LEFT);
 		planeRefinement(planes, energyFnct, rightCost, it, RIGHT);
 
-		imshow("left disparity image", planes.disp[LEFT]/255);
-		imshow("right disparity image", planes.disp[RIGHT]/255);
-		cout<<"plane refinement done at iteration "<<it<<endl;
-		waitKey(1);
+		cv::imshow("left disparity image", planes.disp[LEFT]/255);
+		cv::imshow("right disparity image", planes.disp[RIGHT]/255);
+		std::cout<<"plane refinement done at iteration "<<it<<endl;
+		cv::waitKey(1);
 
 		viewPropagation(planes, energyFnct, leftCost, it, LEFT);
 		viewPropagation(planes, energyFnct, rightCost, it, RIGHT);
 
-		imshow("left disparity image", planes.disp[LEFT]/255);
-		imshow("right disparity image", planes.disp[RIGHT]/255);
-		cout<<"view propagation done at iteration "<<it<<endl;
-		waitKey(1);
+		cv::imshow("left disparity image", planes.disp[LEFT]/255);
+		cv::imshow("right disparity image", planes.disp[RIGHT]/255);
+		std::cout<<"view propagation done at iteration "<<it<<endl;
+		cv::waitKey(1);
 	}
+	spatialPropagation(planes, energyFnct, leftCost, params.iterationNo, LEFT);
+	spatialPropagation(planes, energyFnct, rightCost, params.iterationNo, RIGHT);
+
+	cv::imshow("left disparity image", planes.disp[LEFT]/255);
+	cv::imshow("right disparity image", planes.disp[RIGHT]/255);
+	std::cout<<"spatial propagation done at iteration "<<params.iterationNo<<endl;
+	cv::waitKey(1);
+
 	leftRightConfCheck(planes, dispImg);
 	imshow("disparity image", dispImg/255);
 	cout<<"disparity algo done " <<endl;
@@ -93,12 +104,12 @@ void PatchMatch::compute(const cv::Mat& leftImg, const cv::Mat& rightImg, cv::Ma
 	waitKey(0);
 }
 
-void PatchMatch::init(const cv::Mat& leftImg, const cv::Mat& rightImg)
+void PatchMatch::init(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
 	int rows = leftImg.rows;
 	int cols = leftImg.cols;
 	planes.init(leftImg, rightImg);
-	energyFnct.init(leftImg, rightImg);
+	energyFnct.init(mvm, leftImg, rightImg);
 	leftCost.create(rows, cols, CV_32F);
 	rightCost.create(rows, cols, CV_32F);
 	for(int row = (params.winSize/2+1); row < (rows-params.winSize/2); ++row)

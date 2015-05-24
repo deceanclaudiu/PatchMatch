@@ -10,7 +10,7 @@ public:
 	GradientCost(const Params& params);
 	~GradientCost(void);
 
-	float  operator()(const cv::Point point, const float disp);
+	float  operator()(const cv::Point2f point, const float disp);
 	float  operator()(int row, int col, const float disp);
 private:
 	void applyTransform(const cv::Mat& inputImg, cv::Mat& outputImg);

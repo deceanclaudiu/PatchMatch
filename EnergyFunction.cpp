@@ -13,10 +13,10 @@ EnergyFunction::~EnergyFunction(void)
 {
 }
 
-void EnergyFunction::init(const cv::Mat& leftImg, const cv::Mat& rightImg)
+void EnergyFunction::init(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
 	adapWin.init(leftImg, rightImg);
-	costFnct.init(leftImg, rightImg);
+	costFnct.init(mvm, leftImg, rightImg);
 }
 
 bool EnergyFunction::betterPlane(int row, int col, cv::Vec3f planeEquation, cv::Vec3f planeEquationProposal, Direction dir)

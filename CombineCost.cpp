@@ -16,20 +16,20 @@ CombineCost::~CombineCost(void)
 {
 }
 
-void CombineCost::init(const cv::Mat& leftImg, const cv::Mat& rightImg)
+void CombineCost::init(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
-	FeatureDescriptor::init(leftImg, rightImg);
-	censusCost.init(leftImg,rightImg);
-	intensityCost.init(leftImg,rightImg);
-	gradientCost.init(leftImg,rightImg);
+	FeatureDescriptor::init(mvm, leftImg, rightImg);
+	censusCost.init(mvm, leftImg,rightImg);
+	intensityCost.init(mvm, leftImg,rightImg);
+	gradientCost.init(mvm, leftImg,rightImg);
 }
 
 float  CombineCost::operator()(int row, int col, const float disp)
 {
-	return (*this)(cv::Point(col, row), disp);
+	return (*this)(cv::Point2f(col, row), disp);
 }
 
-float  CombineCost::operator()(const cv::Point point, const float disp)
+float  CombineCost::operator()(const cv::Point2f point, const float disp)
 {
 	double censusCst, gradientCst, intensityCst, cost;
 	censusCst = censusCost(point, disp);

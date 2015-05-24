@@ -14,8 +14,8 @@ public:
 	CombineCost(const Params& params);
 	~CombineCost(void);
 
-	void init(const cv::Mat& leftImg, const cv::Mat& rightImg);
-	float  operator()(const cv::Point point, const float disp);
+	void init(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv::Mat& rightImg);
+	float  operator()(const cv::Point2f point, const float disp);
 	float  operator()(int row, int col, const float disp);
 private:
 	Census censusCost;

@@ -33,24 +33,34 @@ int main()
 
 	// compute visual odometry
 	mvm.process(leftImg0, rightImg0);
+	// compute first frame
+	pm.compute(mvm, leftImg0, rightImg0, dispImg);
+
+	// compute visual odometry
 	if (mvm.process(leftImg1, rightImg1)) 
 	{
-		//for(int i=2 ; i< 255; ++i)
+		// compute 2nd frame
+		pm.compute(mvm, leftImg1, rightImg1, dispImg);
+		//for(int i=1 ; i< 255; ++i)
 		//{
+		//	std::cout<<i<<std::endl;
 		//	cv::Point3f input(300,200, i);
 		//	cv::Point3f output;
 		//	mvm.getUvdFr1ToFr0(input, output);
 		//	cv::Point2f pct1(input.x, input.y);
 		//	cv::Point2f pct0(output.x, output.y);
+		//	cv::Point2f pct0R(output.x - output.z, output.y);
 		//	cv::circle(leftImg1, pct1, 10, cv::Scalar(0), 3);
-		//	cv::circle(leftImg0, pct0, 10, cv::Scalar(0), 3);
-
+		//	Mat leftImg0t = leftImg0.clone();
+		//	cv::circle(leftImg0t, pct0, 10, cv::Scalar(0), 3);
+		//	Mat rightImg0t = rightImg0.clone();
+		//	cv::circle(rightImg0t, pct0R, 10, cv::Scalar(0), 3);
 		//	cv::namedWindow("Left Image 0");
 		//	cv::imshow("Left Image", leftImg1);
-		//	cv::imshow("Left Image 0", leftImg0);
+		//	cv::imshow("Left Image 0", leftImg0t);
+		//	cv::imshow("Right Image 0", rightImg0t);
 		//	cv::waitKey(0);
 		//}
 	}
-	pm.compute(leftImg1, rightImg1, dispImg);
 	return 0;
 }

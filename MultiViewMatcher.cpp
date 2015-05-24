@@ -3,8 +3,7 @@
 #include <fstream>      // std::ifstream
 
 
-MultiViewMatcher::MultiViewMatcher(VisualOdometryStereo::parameters param)/*:
-	viso(param)*/
+MultiViewMatcher::MultiViewMatcher(VisualOdometryStereo::parameters param)
 {
 }
 
@@ -42,43 +41,36 @@ MultiViewMatcher::MultiViewMatcher(std::string calibFile)
 	param.calib.cu = leftProj.val[0][2]; // principal point (u-coordinate) in pixels
 	param.calib.cv = leftProj.val[1][2]; // principal point (v-coordinate) in pixels
 	param.base     = b; // baseline in meters
-	viso = new VisualOdometryStereo(param);
-
-	P = leftProj.getMat(0, 0, 2, 2);
-	Pinv = Matrix::inv(P);
-
-	//std::cout << P <<std::endl<<std::endl;
-	//std::cout << Pinv <<std::endl<<std::endl;
+	param.ransac_iters = 500;
+	param.inlier_threshold = 2.0;
+ 	viso = new VisualOdometryStereo(param);
 }
 
 MultiViewMatcher::~MultiViewMatcher(void)
 {
+	delete viso;
 }
 
 void MultiViewMatcher::getUvdFr1ToFr0(const cv::Point3f& input, cv::Point3f& output)
 {
 	float u = input.x;
 	float v = input.y;
-	float d = input.z;
-	Matrix xyz1_h(4,1);
-	xyz1_h.val[0][0] = b*(u-cu)/d;
-	xyz1_h.val[1][0] = b*(v-cv)/d;
-	xyz1_h.val[2][0] = b*f/d;
-	xyz1_h.val[3][0] = 1;
-	std::cout<<xyz1_h<<std::endl<<std::endl;
+	float d = input.z + 0.0001;
 
-	Matrix xyz0_h = Minv * xyz1_h;
-	std::cout<<xyz0_h<<std::endl<<std::endl;
+	float x = b*(u-cu)/d;
+	float y = b*(v-cv)/d;
+	float z = b*f/d;
+	float dd;
+	float xx(0),yy(0),zz(0);
 
-	Matrix xyz0 = (xyz0_h/xyz0_h.val[3][0]).getMat(0, 0, 2, 0);
-	std::cout<<xyz0<<std::endl<<std::endl;
-
-	Matrix uv0_h = P * xyz0;
-	Matrix uv0 = (uv0_h/uv0_h.val[2][0]).getMat(0, 0, 1, 0);
-	std::cout<<uv0<<std::endl<<std::endl;
-
-	output.x = uv0.val[0][0]  ;
-	output.y = uv0.val[1][0];
+	xx = s1[0]*x + s1[1]*y + s1[2]* z + s1[3]; 
+	yy = s2[0]*x + s2[1]*y + s2[2]* z + s2[3]; 
+	zz = s3[0]*x + s3[1]*y + s3[2]* z + s3[3]; 
+	dd = rt3[0]*x + rt3[1]*y + rt3[2]* z + rt3[3]; 
+	dd = b*f/dd;
+	output.x = xx/zz;
+	output.y = yy/zz;
+	output.z = dd;
 	return;
 }
 
@@ -87,13 +79,27 @@ bool MultiViewMatcher::process(cv::Mat& leftImg, cv::Mat& rightImg)
 	// compute visual odometry
 	int32_t dims[] = {leftImg.cols, leftImg.rows, leftImg.cols};
 	bool result = viso->process(leftImg.data, rightImg.data,dims);
+	// output some statistics
+    double num_matches = viso->getNumberOfMatches();
+    double num_inliers = viso->getNumberOfInliers();
+    std::cout << "Matches: " << num_matches<< std::endl;
+    std::cout << "Inliers: " << 100.0*num_inliers/num_matches << " %" << std::endl;
 
 	// current pose (this matrix transforms a point from the current
 	// frame's camera coordinates to the first frame's camera coordinates)nv
 	M = viso->getMotion();
+	std::cout<<"M:"<<std::endl<<M<<std::endl<<std::endl;
 	Minv = Matrix::inv(M);
-
-	std::cout<<M<<std::endl<<std::endl;
-	std::cout<<Minv<<std::endl<<std::endl;
+	std::cout<<"Minv:"<<std::endl<<Minv<<std::endl<<std::endl;
+	std::cout<<"Proj:"<<std::endl<<leftProj<<std::endl<<std::endl;
+	S = leftProj*Minv;
+	std::cout<<"S:"<<std::endl<<S<<std::endl<<std::endl;
+	for(int i=0; i<4; ++i)
+	{
+		s1[i] = S.val[0][i];
+		s2[i] = S.val[1][i];
+		s3[i] = S.val[2][i];
+		rt3[i] = Minv.val[2][i];
+	}
 	return result;
 }

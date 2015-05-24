@@ -27,7 +27,7 @@ void PlaneRefinementProposal::generate(const cv::Mat& disp, const cv::Mat& norma
 	cv::randu(deltaDispMap, -deltaDisp, deltaDisp);
 	cv::randu(deltaNormalsMap, -deltaNormal, deltaNormal);
 
-	dispProp = disp + deltaDispMap;
+	dispProp = abs(disp + deltaDispMap);
 	normalsProp = normals + deltaNormalsMap;
 
 	for(int row = 0; row < disp.rows; ++row)

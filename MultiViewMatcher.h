@@ -3,7 +3,7 @@
 #include "viso_stereo.h"
 #include "opencv2\core.hpp"
 #include "opencv2\calib3d.hpp"
-
+#include "opencv2\highgui.hpp"
 class MultiViewMatcher
 {
 public:
@@ -17,7 +17,8 @@ public:
 private:
 	VisualOdometryStereo * viso;
 	Matrix leftProj, rightProj;
-	Matrix P, Pinv, M, Minv;
+	Matrix S, M, Minv;
+	float s1[4], s2[4], s3[4], rt3[4];
 	float b;//baseline in meters
 	float f;//focal length in pixels
 	float cu, cv;

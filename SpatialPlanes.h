@@ -9,7 +9,7 @@
 
 using namespace cv;
 
-typedef SGMPlaneInit PlaneInitMethod; 
+typedef RandomPlaneInit PlaneInitMethod; 
 
 class SpatialPlanes
 {

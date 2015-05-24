@@ -9,8 +9,8 @@ class Census :
 public:
 	Census(const Params& params);
 	~Census(void);
-
-	float  operator()(const cv::Point point, const float disp);
+	float compute(const cv::Mat& img1, const cv::Mat& img2, const cv::Point2f point1, const cv::Point2f point2);
+	float  operator()(const cv::Point2f point, const float disp);
 	float  operator()(int row, int col, const float disp);
 private:
 	uint popcount(unsigned int x);
