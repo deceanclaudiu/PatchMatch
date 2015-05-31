@@ -4,7 +4,7 @@
 #include "Census.h"
 #include "IntensityCost.h"
 #include "GradientCost.h"
-
+#include "SGMCensus.h"
 #include <intrin.h> 
 
 class CombineCost :
@@ -21,7 +21,7 @@ private:
 	Census censusCost;
 	IntensityCost intensityCost;
 	GradientCost gradientCost;
-
+	SGMCensus sgmCensusCost;
 	static const float alfa, beta;
 };
 

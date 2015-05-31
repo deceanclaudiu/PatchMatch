@@ -38,13 +38,15 @@ PatchMatch::~PatchMatch(void)
 
 void PatchMatch::leftRightConfCheck(SpatialPlanes& planes, cv::Mat& dispImg)
 {
-	dispImg = planes.disp[LEFT];
+	//dispImg = planes.disp[LEFT];
 	for(int row = 0; row < rows; ++row)
 		for(int col = 0; col < cols; ++col)
 		{
 			float d = planes.disp[LEFT].at<float>(row, col);
 			if (((col - d + 0.5f) < 0)||(abs(d - planes.disp[RIGHT].at<float>(row, (int)floor(col - d + 0.5f))) > params.leftRightConfCheckTh))
-				dispImg.at<float>(row, col) = 0;
+				dispImg.at<ushort>(row, col) = 0;
+			else 
+				dispImg.at<ushort>(row, col) = d * 256;
 		}
 }
 
@@ -53,9 +55,9 @@ void PatchMatch::compute(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv
 	++frameCnt;
 	rows = leftImg.rows;
 	cols = leftImg.cols;
-	dispImg.create(leftImg.rows, leftImg.cols, CV_32F);
+	dispImg.create(leftImg.rows, leftImg.cols, CV_16U);
 	init(mvm, leftImg, rightImg);
-	if(frameCnt < 2) return;
+	/*if(frameCnt < 2) return;*/
 	cv::imshow("left disparity image", planes.disp[LEFT]/255);
 	cv::imshow("right disparity image", planes.disp[RIGHT]/255);
 	std::cout<<"initialization done"<<endl;
@@ -95,13 +97,13 @@ void PatchMatch::compute(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv
 	cv::waitKey(1);
 
 	leftRightConfCheck(planes, dispImg);
-	imshow("disparity image", dispImg/255);
+	imshow("disparity image", dispImg);
 	cout<<"disparity algo done " <<endl;
 	waitKey(1);
 	imwrite("disp_result.png", dispImg);
 	imwrite("left_result.png", planes.disp[LEFT]);
 	imwrite("right_result.png", planes.disp[RIGHT]);
-	waitKey(0);
+	waitKey(1);
 }
 
 void PatchMatch::init(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv::Mat& rightImg)

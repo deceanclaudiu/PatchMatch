@@ -10,7 +10,7 @@
 #include "CombineCost.h"
 #include "SGMCensus.h"
 
-typedef SGMCensus CostFunction; 
+typedef CombineCost CostFunction; 
 
 class EnergyFunction
 {

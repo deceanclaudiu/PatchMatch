@@ -2,7 +2,8 @@
 
 
 SGMCensus::SGMCensus(const Params& params):
-	FeatureDescriptor(params)
+	FeatureDescriptor(params),
+	census(params)
 {
 }
 
@@ -22,49 +23,165 @@ float  SGMCensus::operator()(int row, int col, const float disp)
 float  SGMCensus::operator()(const cv::Point2f point, const float disp)
 {
 	if((point.x - disp < 0)||(point.x - disp >= (leftImg.cols - 1))||(point.x < 0)||(point.x >= (leftImg.cols - 1))) return 255.0;
-	//int dispRange = params.dispEnd - params.dispStart;
-	//int b =  data[(int)floor(point.y * leftImg.cols*dispRange + point.x * dispRange + disp - params.dispStart + 0.5)];
-	return 2.0;
+
+	//return census(point.y, point.x, disp);
+	int row = point.y;
+	int col = (int)point.x;
+	int d = (int)floor(disp+0.5);
+	return S[row][col][d];//census(row, col, disp);
 }
 
 void SGMCensus::init(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv::Mat& rightImg)
 {
-	int width = leftImg.rows;
-	int height = leftImg.cols;
-	int dispRange = params.dispEnd - params.dispStart;
-	StereoSGMParams_t paramsStereo;
-    paramsStereo.lrCheck = true;
-    paramsStereo.MedianFilter = true;
-    paramsStereo.Paths = 8;
-    paramsStereo.subPixelRefine = 0;
-    paramsStereo.NoPasses = 2;
-    paramsStereo.rlCheck = false;
-	// get memory and init sgm params
-    float32* dispImg = (float32*)_mm_malloc(width*height*sizeof(float32), 16);
-    float32* dispImgRight = (float32*)_mm_malloc(width*height*sizeof(float32), 16);
-	uint16* dsi = (uint16*)_mm_malloc(width*height*dispRange*sizeof(uint16), 32);
-    uint64* leftImgCensus = (uint64*)_mm_malloc(width*height*sizeof(uint64), 16);
-    uint64* rightImgCensus = (uint64*)_mm_malloc(width*height*sizeof(uint64), 16);
-	StereoSGM<uint8> m_sgm16(width, height, params.dispEnd , paramsStereo);
-	census9x7_mode8(leftImg.data, leftImgCensus, width, height);
-    census9x7_mode8(rightImg.data, rightImgCensus, width, height);
-
-    costMeasureCensusCompressed9x7_xyd(leftImgCensus, rightImgCensus, height, width, dispRange, 1, dsi);
-
-    m_sgm16.processParallel(dsi, leftImg.data, dispImg, dispImgRight, 1);
-
-/*	Census::init(mvm, leftImg, rightImg);
-	int rows = leftImg.rows;
-	int cols = leftImg.cols;
-	int dispRange = params.dispEnd - params.dispStart;
-	delete data;
-	data =  new int[rows*cols*dispRange];
-	int * tmp = data;
-	for(int row = 0; row < rows; ++row)
-		for(int col = 0; col < cols; ++col)
-			for(int disp = 0; disp < dispRange; ++disp, tmp++)
+	height = leftImg.rows;
+	width = leftImg.cols;
+	dispCnt = params.dispEnd - params.dispStart + 1;    
+	FeatureDescriptor::init(mvm, leftImg, rightImg);
+	census.init(mvm, leftImg, rightImg);
+	memset(data, 0xF, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = 0; row < height; ++row)
+		for(int col = 0; col < width; ++col)
+			for(int disp = 0; disp < dispCnt; ++disp)
 			{
-				int cost = Census::operator()(row, col, disp + params.dispStart);
-				*tmp = cost;
-			}*/
+				int cost = census(row, col, disp);
+				data[row][col][disp]= cost;
+			}
+	sgm();
+}
+
+void SGMCensus::sgm()
+{
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	memcpy(S, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	/*for(int row = 0; row < height; ++row)
+		for(int col = 0; col < width; ++col)
+		{
+			if(col > 0)
+			{
+				int prevMin = 0xFFFF;
+				for(int dd = 0;dd < dispCnt;++dd)
+				{
+					if(prevMin > L[row][col - 1][dd]) prevMin = L[row][col-1][dd];
+				}
+				for(int disp = 0; disp < dispCnt; ++disp)
+				{
+						L[row][col][disp] += getSmoothingCost(col-1, row, col, row, disp, prevMin) - prevMin;
+						S[row][col][disp] += L[row][col][disp];
+				}
+			}
+
+		}
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = 0; row < height; ++row)
+		for(int col = 0; col < width; ++col)
+		{
+			if(row > 0)
+			{
+				int prevMin = 0xFFFF;
+				for(int dd = 0;dd < dispCnt;++dd)
+				{
+					if(prevMin > L[row-1][col][dd]) prevMin = L[row-1][col][dd];
+				}
+				for(int disp = 0; disp < dispCnt; ++disp)
+				{
+						L[row][col][disp] += getSmoothingCost(col, row-1, col, row, disp, prevMin) - prevMin;
+						S[row][col][disp] += L[row][col][disp];
+				}
+			}
+		}*/
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = 0; row < height; ++row)
+		for(int col = 0; col < width; ++col)
+		{
+			if((col > 0)&&(row > 0))
+			{
+				int prevMin = 0xFFFF;
+				for(int dd = 0;dd < dispCnt;++dd)
+				{
+					if(prevMin > L[row - 1][col - 1][dd]) prevMin = L[row-1][col-1][dd];
+				}
+				for(int disp = 0; disp < dispCnt; ++disp)
+				{
+						L[row][col][disp] += getSmoothingCost(col-1, row-1, col, row, disp, prevMin) - prevMin;
+						S[row][col][disp] += L[row][col][disp];
+				}
+			}
+
+		}/*
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = height - 1; row > 0 ; --row)
+		for(int col = width - 1; col > 0; --col)
+		{
+			if(col < height - 1)
+			{
+				int prevMin = 0xFFFF;
+				for(int dd = 0;dd < dispCnt;++dd)
+				{
+					if(prevMin > L[row][col + 1][dd]) prevMin = L[row][col + 1][dd];
+				}
+				for(int disp = 0; disp < dispCnt; ++disp)
+				{
+						L[row][col][disp] += getSmoothingCost(col + 1, row, col, row, disp, prevMin) - prevMin;
+						S[row][col][disp] += L[row][col][disp];
+				}
+			}
+		}
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = height - 1; row > 0 ; --row)
+		for(int col = width - 1; col > 0; --col)
+		{
+			if(row < width - 1)
+			{
+				int prevMin = 0xFFFF;
+				for(int dd = 0;dd < dispCnt;++dd)
+				{
+					if(prevMin > L[row+1][col][dd]) prevMin = L[row+1][col][dd];
+				}
+				for(int disp = 0; disp < dispCnt; ++disp)
+				{
+						L[row][col][disp] += getSmoothingCost(col, row+1, col, row, disp, prevMin) - prevMin;
+						S[row][col][disp] += L[row][col][disp];
+				}
+			}
+		}
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = height - 1; row > 0 ; --row)
+		for(int col = width - 1; col > 0; --col)
+		{
+			if((row < width - 1)&&(col < height - 1))
+			{
+				int prevMin = 0xFFFF;
+				for(int dd = 0;dd < dispCnt;++dd)
+				{
+					if(prevMin > L[row+1][col+1][dd]) prevMin = L[row+1][col+1][dd];
+				}
+				for(int disp = 0; disp < dispCnt; ++disp)
+				{
+						L[row][col][disp] += getSmoothingCost(col+1, row+1, col, row, disp, prevMin) - prevMin;
+						S[row][col][disp] += L[row][col][disp];
+				}
+			}
+		}*/
+}
+
+
+int SGMCensus::getSmoothingCost(int prevCol, int prevRow, int col, int row, int d, int prevMin)
+{
+	int cost = L[prevRow][prevCol][d];
+
+	if(d > params.dispStart)
+	{
+		int cost2 = L[prevRow][prevCol][d - 1] + P1;
+		if(cost > cost2) cost = cost2;
+	}
+	if(d < params.dispEnd)
+	{
+		int cost3 = L[prevRow][prevCol][d + 1] + P1;
+		if (cost > cost3) cost = cost3;
+	}
+	float simDiff = abs(leftImg.at<uchar>(row,col)-leftImg.at<uchar>(prevRow,prevCol)) + 1.0;
+	prevMin += P2/simDiff;
+	if (cost > prevMin) cost = prevMin;
+
+	return cost;
 }
