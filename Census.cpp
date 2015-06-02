@@ -20,6 +20,9 @@ float Census::compute(const cv::Mat& img1, const cv::Mat& img2, const cv::Point2
 		uint rightCensus = img2.at<ushort>(floor(point2.y + 0.5), floor(point2.x + 0.5));
 		int cost = hamming(leftCensus, rightCensus);
 		return cost;
+	}else
+	{
+		return 16.0;
 	}
 }
 
@@ -33,7 +36,7 @@ float  Census::operator()(const cv::Point2f point, const float disp)
 {
 	if((point.x - disp < 0)||(point.x - disp >= (leftImg.cols - 1))||(point.x < 0)||(point.x >= (leftImg.cols - 1))||(disp < 0)) return 255.0;
 	int cost(0);
-	if((frameCnt % 2)==0)
+	//if((frameCnt % 2)==0)
 	{
 		cv::Point3f point1(point.x, point.y, disp);
 		cv::Point3f point0;

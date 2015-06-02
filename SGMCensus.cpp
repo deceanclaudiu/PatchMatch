@@ -51,9 +51,10 @@ void SGMCensus::init(MultiViewMatcher& mvm, const cv::Mat& leftImg, const cv::Ma
 
 void SGMCensus::sgm()
 {
-	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	//memset(S, 0, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(long));
 	memcpy(S, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
-	/*for(int row = 0; row < height; ++row)
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = 0; row < height; ++row)
 		for(int col = 0; col < width; ++col)
 		{
 			if(col > 0)
@@ -85,10 +86,10 @@ void SGMCensus::sgm()
 				for(int disp = 0; disp < dispCnt; ++disp)
 				{
 						L[row][col][disp] += getSmoothingCost(col, row-1, col, row, disp, prevMin) - prevMin;
-						S[row][col][disp] += L[row][col][disp];
+						S[row][col][disp] += L[row][col][disp]/2;
 				}
 			}
-		}*/
+		}
 	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
 	for(int row = 0; row < height; ++row)
 		for(int col = 0; col < width; ++col)
@@ -103,16 +104,35 @@ void SGMCensus::sgm()
 				for(int disp = 0; disp < dispCnt; ++disp)
 				{
 						L[row][col][disp] += getSmoothingCost(col-1, row-1, col, row, disp, prevMin) - prevMin;
-						S[row][col][disp] += L[row][col][disp];
+						S[row][col][disp] += L[row][col][disp]/2;
 				}
 			}
 
-		}/*
+		}
 	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
-	for(int row = height - 1; row > 0 ; --row)
-		for(int col = width - 1; col > 0; --col)
+	for(int row = 0; row < height; ++row)
+		for(int col = 0; col < width; ++col)
 		{
-			if(col < height - 1)
+			if((col > 0)&&(row > 0))
+			{
+				int prevMin = 0xFFFF;
+				for(int dd = 0;dd < dispCnt;++dd)
+				{
+					if(prevMin > L[row - 1][col + 1][dd]) prevMin = L[row-1][col+1][dd];
+				}
+				for(int disp = 0; disp < dispCnt; ++disp)
+				{
+						L[row][col][disp] += getSmoothingCost(col+1, row-1, col, row, disp, prevMin) - prevMin;
+						S[row][col][disp] += L[row][col][disp]/2;
+				}
+			}
+
+		}
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = height - 1; row >= 0 ; --row)
+		for(int col = width - 1; col >= 0; --col)
+		{
+			if(col < width - 1)
 			{
 				int prevMin = 0xFFFF;
 				for(int dd = 0;dd < dispCnt;++dd)
@@ -122,7 +142,7 @@ void SGMCensus::sgm()
 				for(int disp = 0; disp < dispCnt; ++disp)
 				{
 						L[row][col][disp] += getSmoothingCost(col + 1, row, col, row, disp, prevMin) - prevMin;
-						S[row][col][disp] += L[row][col][disp];
+						S[row][col][disp] += L[row][col][disp]/2;
 				}
 			}
 		}
@@ -140,7 +160,7 @@ void SGMCensus::sgm()
 				for(int disp = 0; disp < dispCnt; ++disp)
 				{
 						L[row][col][disp] += getSmoothingCost(col, row+1, col, row, disp, prevMin) - prevMin;
-						S[row][col][disp] += L[row][col][disp];
+						S[row][col][disp] += L[row][col][disp]/2;
 				}
 			}
 		}
@@ -148,7 +168,7 @@ void SGMCensus::sgm()
 	for(int row = height - 1; row > 0 ; --row)
 		for(int col = width - 1; col > 0; --col)
 		{
-			if((row < width - 1)&&(col < height - 1))
+			if((col < width - 1)&&(row < height - 1))
 			{
 				int prevMin = 0xFFFF;
 				for(int dd = 0;dd < dispCnt;++dd)
@@ -158,25 +178,43 @@ void SGMCensus::sgm()
 				for(int disp = 0; disp < dispCnt; ++disp)
 				{
 						L[row][col][disp] += getSmoothingCost(col+1, row+1, col, row, disp, prevMin) - prevMin;
-						S[row][col][disp] += L[row][col][disp];
+						S[row][col][disp] += L[row][col][disp]/2;
 				}
 			}
-		}*/
+		}
+	memcpy(L, data, g_maxWidth*g_maxHeight*g_maxDispCnt*sizeof(int));
+	for(int row = height - 1; row > 0 ; --row)
+		for(int col = width - 1; col > 0; --col)
+		{
+			if((col < width - 1)&&(row < height - 1))
+			{
+				int prevMin = 0xFFFF;
+				for(int dd = 0;dd < dispCnt;++dd)
+				{
+					if(prevMin > L[row+1][col-1][dd]) prevMin = L[row+1][col-1][dd];
+				}
+				for(int disp = 0; disp < dispCnt; ++disp)
+				{
+						L[row][col][disp] += getSmoothingCost(col-1, row+1, col, row, disp, prevMin) - prevMin;
+						S[row][col][disp] += L[row][col][disp]/2;
+				}
+			}
+		}
 }
 
 
-int SGMCensus::getSmoothingCost(int prevCol, int prevRow, int col, int row, int d, int prevMin)
+unsigned SGMCensus::getSmoothingCost(int prevCol, int prevRow, int col, int row, int d, int prevMin)
 {
-	int cost = L[prevRow][prevCol][d];
+	unsigned cost = L[prevRow][prevCol][d];
 
 	if(d > params.dispStart)
 	{
-		int cost2 = L[prevRow][prevCol][d - 1] + P1;
+		unsigned cost2 = L[prevRow][prevCol][d - 1] + P1;
 		if(cost > cost2) cost = cost2;
 	}
 	if(d < params.dispEnd)
 	{
-		int cost3 = L[prevRow][prevCol][d + 1] + P1;
+		unsigned cost3 = L[prevRow][prevCol][d + 1] + P1;
 		if (cost > cost3) cost = cost3;
 	}
 	float simDiff = abs(leftImg.at<uchar>(row,col)-leftImg.at<uchar>(prevRow,prevCol)) + 1.0;

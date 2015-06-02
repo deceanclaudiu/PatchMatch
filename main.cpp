@@ -1,7 +1,7 @@
 #include "opencv2\core.hpp"
 #include "opencv2\highgui.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
-
+#include <opencv2/opencv.hpp>
 #include "PatchMatch.h"
 #include "MultiViewMatcher.h"
 
@@ -11,9 +11,9 @@ PatchMatch pm(params);
 int main()
 {
 	std::string sourceDir = "d:/Work/Kitti/dataset/training\\";
-	std::string dstDir = "d:/Work/Kitti/dataset/results\\";
+	std::string dstDir = "d:/Work/Kitti/eval/results/disp/data\\";
 	cv::Mat leftImg0, rightImg0, dispImg;
-	for(int no = 1; no<= 193; ++no)
+	for(int no = 0; no<= 193; ++no)
 	{
 		std::string number;
 		if(no < 10)
@@ -22,7 +22,7 @@ int main()
 			number = "0000" + std::to_string(no);
 		else 
 			number = "000" + std::to_string(no);
-		std::string file = number+"_10.png";
+		std::string file = number+"_11.png";
 		leftImg0 = imread(sourceDir + "image_0/" + file);
 		rightImg0 = imread(sourceDir + "image_1/" + file);
 
@@ -37,10 +37,10 @@ int main()
 		// compute visual odometry
 		mvm.process(leftImg0, rightImg0);
 		// compute first frame
-		pm.compute(mvm, leftImg0, rightImg0, dispImg);
-		cv::imwrite(dstDir+file, dispImg);
+		//pm.compute(mvm, leftImg0, rightImg0, dispImg);
+		//cv::imwrite(dstDir+file, dispImg);
 
-		file = number+"_11.png";
+		file = number+"_10.png";
 		leftImg0 = imread(sourceDir + "image_0/" + file);
 		rightImg0 = imread(sourceDir + "image_1/" + file);
 		cvtColor(leftImg0, leftImg0, COLOR_RGB2GRAY);
